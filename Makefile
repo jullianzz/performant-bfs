@@ -8,19 +8,19 @@ all: test.o
 
 matrix.o: matrix.c matrix.h 
 
-param.o: param.h
+benchmark.o: benchmark.c benchmark.h param.h
 
-benchmark.o: benchmark.c benchmark.h param.o
+queue.o: queue.h queue.c
 
-serial.o: serial.c param.o benchmark.o matrix.o
+serial.o: serial.c param.h benchmark.o matrix.o queue.o
 
-test.o: test.c serial.o param.o matrix.o benchmark.o 
+test.o: test.c serial.o
 
 
 .PHONY: clean
 
 clean:
-	rm -f test.o serial.o param.o matrix.o benchmark.o 
+	rm -f *.o
 
 # test1: tls.o test1.c
 # 	$(CC) $(CFLAGS) -pthread tls.o test1.c -o test1
