@@ -18,10 +18,8 @@ typedef struct {
 matrix_ptr new_matrix(long int row_len);
 int set_matrix_rowlen(matrix_ptr m, long int index);
 long int get_matrix_rowlen(matrix_ptr m);
-int init_matrix(matrix_ptr m, long int row_len);
 int init_matrix_rand(matrix_ptr m, long int row_len);
-int init_matrix_rand_grad(matrix_ptr m, long int row_len);
-int zero_matrix(matrix_ptr m, long int len);
-void print_matrix(matrix_ptr v); 
+int zero_matrix(matrix_ptr m, long int row_len);
+
 
 #endif 

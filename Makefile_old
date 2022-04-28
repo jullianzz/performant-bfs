@@ -1,0 +1,34 @@
+# Author: Julia Zeng
+# Makefile for building benchmarks and tests
+
+override CFLAGS := -Wall -Werror -std=gnu99 -pedantic -O0 -g -pthread
+override LDLIBS := -pthread
+
+####### Useful make targets #######
+all: test.o
+
+serial_tb: serial_tb.o	# make target for serial testbench; execute "make serial_tb"
+
+
+####### Make targets to build stuff #######
+
+matrix.o: matrix.h matrix.c param.h
+
+graph.o: graph.c graph.h matrix.o
+
+benchmark.o: benchmark.h benchmark.c
+
+queue.o: queue.h queue.c
+
+serial.o: serial.h param.h matrix.o queue.o graph.o serial.c
+
+test.o: test.c serial.o benchmark.o
+
+serial_tb.o: serial.o serial_tb.c graph.o matrix.o
+
+
+.PHONY: clean
+
+clean:
+	rm -f *.o
+

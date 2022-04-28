@@ -19,13 +19,13 @@
 #define OPTIONS 3     
 #define IDENT 0
 
-#define INIT_LOW -10.0
-#define INIT_HIGH 10.0
+// #define INIT_LOW -10.0
+// #define INIT_HIGH 10.0
 
 
-typedef double data_t;  /* Adjust data type here */
+typedef int data_t;  /* Keep datatype as int if using adjacency matrix */
 
-int NUM_THREADS = 4;
+#define NUM_THREADS 4
 
 
 #endif

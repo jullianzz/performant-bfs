@@ -7,7 +7,8 @@
 
 #include "param.h" 
 #include "serial.h" 
-#include "graph.h
+#include "graph.h"
+#include "matrix.h"
 
 
 int main() {
@@ -16,10 +17,11 @@ int main() {
 	// Use assertions to verify output
 	// Print theoretical and experimental outputs
 	
-	int size = 4; 								// set number of vertices
-	struct Graph *G = init_graph_rand(size); 	// initialize a graph randomly
+	int size = 10; 								// initialize number of vertices
+	struct Graph *inputG = init_graph((long int) size); 	// initialize directed test
+	//struct queue *serial_out = serial_bfs(inputG); 	// pass through serial bfs design
 	
-	struct queue *serial_out = serial_bfs(G); 
+	display_graph(inputG); 		// display the graph 
 	
 	
 	return 0; 

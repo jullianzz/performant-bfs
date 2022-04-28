@@ -8,7 +8,8 @@
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
-#include <stdlib.h>
+#include "matrix.h"
+
 
 /* Graph data structure which is represented by an adjacency matrix */ 
 struct Graph {
@@ -17,14 +18,8 @@ struct Graph {
 }; 
 
 
-/* init_graph to initialize graph and populates adjacency matrix randomly */ 
-struct Graph *init_graph_rand(int size) {
-	struct Graph *G = malloc(sizeof(struct Graph));	// allocate memory to graph 
-	init_matrix_rand(G->adjacency_mat, size);	// randomly initialize adjacency matrix
-	G->size = size;		// set Graph size
-	return G; 
-}
-
+struct Graph *init_graph(int size);
+void display_graph(struct Graph *G);
 
 
 #endif
