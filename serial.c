@@ -62,11 +62,16 @@ struct queue *serial_bfs(struct Graph *G) {
 	while (true) {
 		/* If current_v points to last item in adjacency list and if size of 
 	       visited list is equal to the number of vertices, break out of loop */
-		if (current_v->next == NULL && get_queue_size(visited_list) == size)	break; 
+		if (get_queue_size(visited_list) == size)	break; 
 			
 		/* Find vertex to perform algorithm on */
-		v = (current->next != NULL) ? current_v->next->value : find_unvisited(G);
-		push_queue(visited_list, v);	// add vertex to visited list
+		if (current_v->next != NULL)  {
+			current_v = current_v->next;
+		} else {
+			v = find_unvisited(G); 			// find an unvisited vertex
+			push_queue(visited_list, v);	// add vertex to visited list
+			G->visited_map[v] = true; 		// update graph visited map
+		}
 		
 		/* Initialize the current_v pointer (happens once) */ 
 		static bool is_first_time = true;
@@ -79,13 +84,12 @@ struct queue *serial_bfs(struct Graph *G) {
 		int col;
 		for (col = 0; col < size; col++) {
 			if (G->adjacency_mat->data[(current_v->value)*size + col] == 1) {
-				if (!search_queue(visited_list, current_v->value)) {	// if vertex not in visited list
-					push_queue(visited_list, current_v->value);			// add vertex to visited list
-					G->visited_map[current_v->value] = true; 		// update visited map
+				if (!search_queue(visited_list, col)) {	// if vertex not in visited list
+					push_queue(visited_list, col);						// add vertex to visited list
+					G->visited_map[col] = true; 						// update visited map
 				}
 			}
 		}
-		
 
 	}
 	

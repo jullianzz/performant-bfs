@@ -67,7 +67,7 @@ int init_matrix_rand(matrix_ptr m, long int row_len)
     if (row_len > 0) {
 		m->rowlen = row_len;
 		for (i = 0; i < row_len; i++) {			// i = row
-			for (j = i; j < row_len; j++) {		// j = col
+			for (j = i+1; j < row_len; j++) {		// j = col
 				m->data[i*row_len+j] = (data_t) rand() % 2;	// generate random value [0,1]
 				m->data[j*row_len+i] = m->data[i*row_len+j];// set mirror element to same value
 			}

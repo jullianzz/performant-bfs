@@ -17,7 +17,7 @@ int main() {
 	// Use assertions to verify output
 	// Print theoretical and experimental outputs
 	
-	int size = 2; 								// initialize number of vertices
+	int size = 8; 								// initialize number of vertices
 	struct Graph *inputG = init_graph((long int) size); 	// initialize directed test
 	struct queue *serial_out = serial_bfs(inputG); 	// pass through serial bfs design
 	print_queue(serial_out); 	// display the serial bfs output
