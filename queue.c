@@ -98,7 +98,7 @@ bool compare(struct queue *q1, struct queue *q2) {
 		struct node *n1 = q1->first_node;
 		struct node *n2 = q2->first_node; 
 		for (int i = 0; i < s1; i++) {
-			if (q1->value != q2->value) {
+			if (n1->value != n2->value) {
 				return false; 
 			}
 			n1 = n1->next;

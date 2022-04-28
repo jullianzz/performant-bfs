@@ -65,9 +65,9 @@ struct queue *serial_bfs(struct Graph *G) {
 		/* Traverse the adjacency matrix for the first neighbor in the row */
 		int col;
 		for (col = 0; col < size; col++) {
-			if (G->adjacency_mat[current_v][col] == 1) {
-				if (!search_queue(visited_list, current_v)) {	// if vertex not in visited list, add vertex to visited list
-					push_queue(visited_list, current_v);	
+			if (G->adjacency_mat->data[(current_v->value)*size + col] == 1) {
+				if (!search_queue(visited_list, current_v->value)) {	// if vertex not in visited list, add vertex to visited list
+					push_queue(visited_list, current_v->value);	
 				}
 			}
 		}

@@ -18,7 +18,7 @@ test.o: test.c serial.o
 
 
 ######## Testbenches to verify BFS Output ########
-serial_testbench: serial_testbench.c serial.o
+serial_testbench: serial_testbench.c serial.o	// make serial_testbench
 
 
 .PHONY: clean

@@ -1,0 +1,5 @@
+# Author: Julia Zeng
+# Description: .gitignore file for performant-bfs repository
+
+
+*.o 
