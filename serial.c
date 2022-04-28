@@ -1,8 +1,9 @@
 /*
 * Author: Julia Zeng 
 *
-* Code description: Implementation of serial verion 
+* Code description: Implementation of serial version 
 * of Breadth-First Search graph traversal algorithm.
+*
 */ 
 
 
@@ -10,6 +11,7 @@
 #include "param.h"
 #include "matrix.h"
 #include "queue.h"
+#include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,37 +38,23 @@
 /* 
 * Define global data structures 
 */ 
-/* Graph data structure which is represented by an adjacency matrix */ 
-struct Graph {
-	matrix_ptr adjacency_mat;	// adjacency matrix
-	int size;					// number of vertices in graph   
-}; 
-
-/* Visited list keeps track of which vertices have already been visited */
-struct queue *visited_list; 
-
-/* Current vertex is a pointer to node in visited list */
-struct node *current_v; 
 
 
 
 /*
 * Define helper functions 
 */ 
-/* init_graph to initialize graph and populates adjacency matrix randomly */ 
-struct Graph *init_graph(int size) {
-	struct Graph *G = malloc(sizeof(struct Graph));	// allocate memory to graph 
-	int ret_val = init_matrix_rand(G->adjacency_mat, size);	// randomly initialize adjacency matrix
-	G->size = vertices;		// set Graph size
-	return G; 
-}
+
+
 
 /* 
 * Define the serial BFS algorithm
 */ 
-void serial_bfs(int size) {
-	struct Graph *G = init_graph(size); 	// initialize graph
-	current_v = malloc(sizeof(struct node));	// initialize current_v
+struct queue *serial_bfs(struct Graph *G) {
+	/* Initialize */ 
+	int size = G->size; 	// get number of vertices
+	struct queue *visited_list = new_queue(); 	// declare list that keeps track of already visited vertices
+	struct node *current_v = malloc(sizeof(struct node)); 	// initialize a pointer to visited list
 	
 	/* Select a random starting vertex */ 
 	int v = rand() % size;	// generate a random number between 0 and size-1
@@ -92,6 +80,8 @@ void serial_bfs(int size) {
 			break; 
 		}
 	}
+	
+	return visited_list; 
 }
 
 

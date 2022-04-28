@@ -88,6 +88,25 @@ bool search_queue(struct queue *q, int v) {
 }
 
 
+/* compare two queues item by item to check if equal */
+bool compare(struct queue *q1, struct queue *q2) {
+	int s1 = q1->size; 
+	int s2 = q2->size;
+	if (s1 != s2) {
+		return false;
+	} else {
+		struct node *n1 = q1->first_node;
+		struct node *n2 = q2->first_node; 
+		for (int i = 0; i < s1; i++) {
+			if (q1->value != q2->value) {
+				return false; 
+			}
+			n1 = n1->next;
+			n2 = n2->next; 
+		}
+	}
+	return true; 
+}
 
 
 

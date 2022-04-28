@@ -17,10 +17,11 @@ serial.o: serial.c param.h benchmark.o matrix.o queue.o
 test.o: test.c serial.o
 
 
+######## Testbenches to verify BFS Output ########
+serial_testbench: serial_testbench.c serial.o
+
+
 .PHONY: clean
 
 clean:
 	rm -f *.o
-
-# test1: tls.o test1.c
-# 	$(CC) $(CFLAGS) -pthread tls.o test1.c -o test1

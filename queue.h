@@ -35,6 +35,7 @@ void push_queue(struct queue *q, int value);
 void print_queue(struct queue *q);
 int get_queue_size(struct queue *q); 
 bool search_queue(struct queue *q, int v); 
+bool compare(struct queue *q1, struct queue *q2);
 
 
 
