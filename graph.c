@@ -35,3 +35,14 @@ void display_graph(struct Graph *G) {
 }
 
 
+/* find_unvisited finds an unvisited vertex in graph G*/
+int find_unvisited(struct Graph *G) {
+	int i;
+	for (i = 0; i < G->size; i++) {
+		if (G->visited_map[i] == false) {
+			return i;
+		}
+	}
+	return -1; 	// return -1 if no unvisited node is found
+} 
+

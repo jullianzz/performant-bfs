@@ -14,6 +14,7 @@
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 // TODO : serial code
@@ -55,30 +56,37 @@ struct queue *serial_bfs(struct Graph *G) {
 	int size = G->size; 	// get number of vertices
 	struct queue *visited_list = new_queue(); 	// declare list that keeps track of already visited vertices
 	struct node *current_v = malloc(sizeof(struct node)); 	// initialize a pointer to visited list
-	
-	/* Select a random starting vertex */ 
-	int v = rand() % size;	// generate a random number between 0 and size-1
-	push_queue(visited_list, v);	// add vertex to visited list
-	current_v = visited_list->first_node;	// point current_v to front of visited list
+	G->visited_map = malloc(size * sizeof(bool));		// allocated a boolean array with 'size' elements
+	int v; 
 	
 	while (true) {
+		/* If current_v points to last item in adjacency list and if size of 
+	       visited list is equal to the number of vertices, break out of loop */
+		if (current_v->next == NULL && get_queue_size(visited_list) == size)	break; 
+			
+		/* Find vertex to perform algorithm on */
+		v = (current->next != NULL) ? current_v->next->value : find_unvisited(G);
+		push_queue(visited_list, v);	// add vertex to visited list
+		
+		/* Initialize the current_v pointer (happens once) */ 
+		static bool is_first_time = true;
+		if (is_first_time) {
+			is_first_time = false; 
+			current_v = visited_list->first_node;	// point current_v to front of visited list
+		}
+	
 		/* Traverse the adjacency matrix for the first neighbor in the row */
 		int col;
 		for (col = 0; col < size; col++) {
 			if (G->adjacency_mat->data[(current_v->value)*size + col] == 1) {
-				if (!search_queue(visited_list, current_v->value)) {	// if vertex not in visited list, add vertex to visited list
-					push_queue(visited_list, current_v->value);	
+				if (!search_queue(visited_list, current_v->value)) {	// if vertex not in visited list
+					push_queue(visited_list, current_v->value);			// add vertex to visited list
+					G->visited_map[current_v->value] = true; 		// update visited map
 				}
 			}
 		}
 		
-		/* Find next vertex to perform algorithm on */
-		current_v = current_v->next;	// look for next vertex in visited list
-		
-		/* Check if reached the end of the adjacency list, stop if so */
-		if (current_v == NULL) {
-			break; 
-		}
+
 	}
 	
 	return visited_list; 

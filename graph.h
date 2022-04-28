@@ -9,17 +9,20 @@
 #define _GRAPH_H_
 
 #include "matrix.h"
+#include <stdbool.h>
 
 
 /* Graph data structure which is represented by an adjacency matrix */ 
 struct Graph {
 	matrix_ptr adjacency_mat;	// adjacency matrix
 	int size;					// number of vertices in graph   
+	bool *visited_map;		// boolean array to map the visit metadata of each vertex
 }; 
 
 
 struct Graph *init_graph(int size);
 void display_graph(struct Graph *G);
+int find_unvisited(struct Graph *G); 
 
 
 #endif
