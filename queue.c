@@ -50,10 +50,16 @@ void push_queue(struct queue *q, int value) {
 	q->size ++; 
 }
 
-/* pop_queue removes and returns the first item of the queue ... I think I don't need to impl. this*/ 
-//int pop_queue(struct queue *q) {
-	// empty for now
-//}
+/* pop_queue removes and returns the first item of the queue ... unfinished*/ 
+/*
+int pop_queue(struct queue *q) {
+	q->size--; 
+	struct node *n = q->first_node; 
+	q->first_node = q->first_node->next; 
+	free(n); 
+	return q->first_node; 	// popped item is NULL if queue empty
+}
+*/
 
 /* get_queue_size returns the size of the queue */
 int get_queue_size(struct queue *q) {

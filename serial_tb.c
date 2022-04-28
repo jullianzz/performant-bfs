@@ -17,11 +17,13 @@ int main() {
 	// Use assertions to verify output
 	// Print theoretical and experimental outputs
 	
-	int size = 8; 								// initialize number of vertices
-	struct Graph *inputG = init_graph((long int) size); 	// initialize directed test
-	struct queue *serial_out = serial_bfs(inputG); 	// pass through serial bfs design
-	print_queue(serial_out); 	// display the serial bfs output
+	int size = 5; 								// initialize number of vertices
+	struct Graph *inputG = init_graph(size); 	// initialize directed test
 	display_graph(inputG); 		// display the graph 
+
+	serial_bfs(inputG); 	// pass through serial bfs design
+	display_traversal(inputG); 	// display the serial bfs output
+
 	
 	
 	return 0; 

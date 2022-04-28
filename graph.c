@@ -11,13 +11,23 @@
 
 
 
-/* init_graph to initialize graph and populates adjacency matrix randomly */ 
+/* init_graph to initialize and malloc graph fields and populates adjacency matrix randomly */ 
 struct Graph *init_graph(int size) {
+	/* Malloc */ 
 	struct Graph *G = malloc(sizeof(struct Graph));	// allocate memory to graph 
-	matrix_ptr new_matrix(long int row_len);
-	G->adjacency_mat = new_matrix((long int) size); 			// initialize adjacency matrix
-	init_matrix_rand(G->adjacency_mat, (long int) size);		// randomly initialize adjacency matrix
-	G->size = size;		// set Graph size
+	G->visited_map = malloc(size * sizeof(bool));	// allocate a boolean array with 'size' elements
+	G->traversal = malloc(size * sizeof(int)); 		// allocate an int array with 'size' elements
+	int i;
+	for (i = 0; i < size; i++) {	// initialize  traversal
+		G->traversal[i] = -1; 
+	}
+	
+	/* Initialize adjacency matrix */ 
+	G->adjacency_mat = new_matrix(size); 		// initialize adjacency matrix
+	init_matrix_rand(G->adjacency_mat, size);	// randomly initialize adjacency matrix
+	
+	/* Set Graph size */
+	G->size = size;	
 	return G; 
 }
 
@@ -26,12 +36,25 @@ struct Graph *init_graph(int size) {
 void display_graph(struct Graph *G) {
 	int size = G->size; 
 	int i;
+	printf("Graph is: \n");
 	for (i = 0; i < size*size; i++) {
 		printf("%d ", G->adjacency_mat->data[i]);
 		if ((i+1) % size == 0) {
 			printf("\n");
 		}		
 	}
+}
+
+
+/* display_traversal prints the bfs traversal of the graph G */
+void display_traversal(struct Graph *G) {
+	int size = G->size; 
+	int i;
+	printf("Traversal is: ");
+	for (i = 0; i < size; i++) {
+		printf("%d ", G->traversal[i]);	
+	}
+	printf("\n");
 }
 
 
