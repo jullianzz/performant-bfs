@@ -24,6 +24,7 @@ struct queue *new_queue() {
 	struct queue *q = malloc(sizeof(struct queue));
 	q->first_node = NULL;
 	q->last_node = NULL; 
+	q->size = 0; 
 	return q;
 }
 
@@ -44,6 +45,9 @@ void push_queue(struct queue *q, int value) {
 		n->next = NULL; 	// set new node->next to NULL
 		q->last_node = n; 	// point last_node to new node
 	}
+	
+	/* Increment queue size */
+	q->size ++; 
 }
 
 /* pop_queue removes and returns the first item of the queue ... I think I don't need to impl. this*/ 
@@ -68,5 +72,25 @@ void print_queue(struct queue *q) {
 	printf("\n"); 
 	printf("Size of queue is %d\n", s); 
 }
+
+/* search_queue traverses through the queue to see if a node with value 'v' exists
+   Currently, at O(n) time, which is bad. Leave for now, refactor using hash-table 
+   implementation later */
+bool search_queue(struct queue *q, int v) {
+	struct node *n = q->first_node; 
+	for (int i = 0; i < get_queue_size(q); i++) {
+		if (n->value == v) {
+			return true; 
+		}
+		n = n->next;
+	}
+	return false;
+}
+
+
+
+
+
+
 
 
