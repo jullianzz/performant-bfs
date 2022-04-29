@@ -80,7 +80,7 @@ printf("\n"
     * used for all initializatons, as long as the size argument is the same
     * the same graph will be created with init_graph. 
     */
-	struct Graph *inputSerial = init_graph(alloc_size); 	// initialize directed test
+	struct Graph *G;		// declare Graph G
 	/*
 	struct Graph *inputpthread = init_graph(alloc_size); 	// initialize directed test
     struct Graph *inputCUDA = init_graph(alloc_size); 	// initialize directed test
@@ -95,12 +95,13 @@ printf("\n"
     OPTION = 0;
     printf("OPTION %d - Serial bfs\n", OPTION);
     for (x = 0; x < NUM_TESTS && (n = A*x*x + B*x + C, n <= alloc_size); x++) {
-    	set_graph_size(inputSerial, n);		// set the graph and adjacency matrix sizes
+    	G = init_graph(n);			// initialize Graph and adjacency matrix
+    	//set_graph_size(G, n);		// set the graph and adjacency matrix sizes
 		clock_gettime(CLOCK_REALTIME, &time_start);
-		struct Graph *inputSerial = init_graph(alloc_size); 	// initialize directed test
-		serial_bfs(inputSerial); 			// run through serial bfs
+		serial_bfs(G); 			// run through serial bfs
 		clock_gettime(CLOCK_REALTIME, &time_stop);
 		time_stamp[OPTION][x] = interval(time_start, time_stop);
+		free_graph(G);		// free Graph 
 		printf("iter %ld done\n", x);
     }
     
@@ -124,14 +125,15 @@ printf("\n"
 	/* Display results */
     printf("\n");
     printf("All measurements are in cycles (if CPNS is set correctly in the code)\n");
-    printf("row_len\tserial_bfs\n");
+    printf("row_len,\tserial_bfs,\n");
     {
 	int i, j;
 	for (i = 0; i < NUM_TESTS; i++) {
-	    printf("%d, ", A*i*i + B*i + C);	// print row length 
+	    //printf("%d,\t", A*i*i + B*i + C);	// print row length 
+	    printf("%d\t", A*i*i + B*i + C);	// print row length 
 	    for (j = 0; j < OPTIONS; j++) {
-			if (j != 0) printf(", ");
-			printf("%ld", (long int)((double)(CPNS) * 1.0e9 * time_stamp[j][i]));	// print time in cycles
+			//if (j != 0) printf(", ");
+			printf("%ld\t", (long int)((double)(CPNS) * 1.0e9 * time_stamp[j][i]));	// print time in cycles
 	    }
 	    printf("\n");
 	}

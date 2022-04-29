@@ -15,11 +15,14 @@
 struct Graph *init_graph(int size) {
 	/* Malloc */ 
 	struct Graph *G = malloc(sizeof(struct Graph));	// allocate memory to graph 
-	G->visited_map = malloc(size * sizeof(bool));	// allocate a boolean array with 'size' elements
 	G->traversal = malloc(size * sizeof(int)); 		// allocate an int array with 'size' elements
+	G->visited_map = malloc(size * sizeof(bool));	// allocate a boolean array with 'size' elements
 	int i;
 	for (i = 0; i < size; i++) {	// initialize  traversal
 		G->traversal[i] = -1; 
+	}
+	for (i = 0; i < size; i++) {	// initialize  traversal
+		G->visited_map[i] = false; 
 	}
 	
 	/* Initialize adjacency matrix */ 
@@ -79,7 +82,11 @@ void set_graph_size(struct Graph *G, long int size) {
 
 /* free_graph frees the malloc'd fields of the Graph structure */
 void free_graph(struct Graph *G) {
-	// free data vector in matrix 
+	free(G->adjacency_mat->data);	// free data vector in matrix 
+	free(G->adjacency_mat);			// free adjacency matrix
+	free(G->visited_map);			// free visited map
+	free(G->traversal); 			// free traversal pointer
+	free(G);						// free Graph
 }
 
 

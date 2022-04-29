@@ -10,8 +10,8 @@
                 //-- Adjust to your computer */
    
 /* Matrix size is determined quadratically n = Ax^2 + Bx + C */
-#define A   2   /* coefficient of x^2 */
-#define B   10   /* coefficient of x */
+#define A   10   /* coefficient of x^2 */
+#define B   50   /* coefficient of x */
 #define C   18  /* constant term */
 
 #define NUM_TESTS 10
