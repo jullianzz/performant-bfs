@@ -10,8 +10,8 @@
                 //-- Adjust to your computer */
    
 /* Matrix size is determined quadratically n = Ax^2 + Bx + C */
-#define A   0   /* coefficient of x^2 */
-#define B   1   /* coefficient of x */
+#define A   2   /* coefficient of x^2 */
+#define B   10   /* coefficient of x */
 #define C   18  /* constant term */
 
 #define NUM_TESTS 10
@@ -26,6 +26,8 @@
 typedef int data_t;  /* Keep datatype as int if using adjacency matrix */
 
 #define NUM_THREADS 4
+
+// #define SEED 100
 
 
 #endif

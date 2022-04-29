@@ -9,6 +9,7 @@
 #include "serial.h" 
 #include "graph.h"
 #include "matrix.h"
+#include <stdio.h>
 
 
 int main() {
@@ -17,7 +18,9 @@ int main() {
 	// Use assertions to verify output
 	// Print theoretical and experimental outputs
 	
-	int size = 5; 								// initialize number of vertices
+	printf("********** Serial BFS Testbench **********\n"); 
+	
+	int size = 10; 								// initialize number of vertices
 	struct Graph *inputG = init_graph(size); 	// initialize directed test
 	display_graph(inputG); 		// display the graph 
 

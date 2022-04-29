@@ -69,3 +69,23 @@ int find_unvisited(struct Graph *G) {
 	return -1; 	// return -1 if no unvisited node is found
 } 
 
+
+/* set_graph_size sets the size of the Graph and adjacency matrix structures */
+void set_graph_size(struct Graph *G, long int size) {
+	G->size = size; 
+	set_matrix_rowlen(G->adjacency_mat, size);
+}
+
+
+/* free_graph frees the malloc'd fields of the Graph structure */
+void free_graph(struct Graph *G) {
+	// free data vector in matrix 
+}
+
+
+
+
+
+
+
+

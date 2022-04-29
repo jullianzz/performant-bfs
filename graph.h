@@ -25,6 +25,7 @@ struct Graph *init_graph(int size);
 void display_graph(struct Graph *G);
 int find_unvisited(struct Graph *G); 
 void display_traversal(struct Graph *G);
+void set_graph_size(struct Graph *G, long int size); 
 
 
 #endif
