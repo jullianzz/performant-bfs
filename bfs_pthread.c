@@ -47,6 +47,15 @@
 
 
 /*
+* Define data structures.
+*/
+typedef struct {
+	struct Graph *G;
+	int v;
+} args, *args_ptr;
+
+
+/*
 * Define globals. 
 */
 pthread_t *Threads;			// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
@@ -63,7 +72,7 @@ int Back;					// Back tracks the index of the last element of the Traversal list
 /* 
 * Define global synchonization locks. 
 */
-pthread_mutex_t mutexes[]; 		// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
+pthread_mutex_t *mutexes; 		// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
 pthread_mutex_t Traversal_lock;	// Traversal_lock protects the Traversal global
 pthread_mutex_t Back_lock; 
 pthread_mutex_t Visited_Map_lock; 
@@ -75,7 +84,10 @@ pthread_mutex_t barrier_lock;
 * Define pthread worker function.
 */ 
 /* look_for_neighbors looks for the  */
-static void *look_for_neighbors(void *arg) {
+void *look_for_neighbors(void *argv) {
+	/* Cast void* to args_ptr */
+	args_ptr arg = (args_ptr) argv;
+	
 	/* Parse arg */
 	int v = arg->v;
 	struct Graph *G = arg->G; 
@@ -92,7 +104,7 @@ static void *look_for_neighbors(void *arg) {
  	int i; 
  	/* Iterate through row v of Graph G. Note: no lock needed on G because read-only */ 
  	for (i = 0; i < size; i++) {
- 		if (G->adjacency_mat[v * size + i] == 1) {
+ 		if (G->adjacency_mat->data[v * size + i] == 1) {
  			num_neighbors++;							// increment num_neighbors
 		 	pthread_mutex_lock(&Visited_Map_lock);		// lock Visited_Map because RD and WR
  		 	if (Visited_Map[v] == false) {				// query the Visited_Map 
@@ -109,7 +121,7 @@ static void *look_for_neighbors(void *arg) {
  	
  	/* Set barrier */
  	pthread_mutex_lock(&barrier_lock);		// lock barrier
- 	barrier = num_neighbor;					// set barrier
+ 	barrier = num_neighbors;					// set barrier
  	pthread_mutex_unlock(&barrier_lock);	// unlock barrier
  	// hmm this may not work, what if another node changes barrier 
  	
@@ -121,12 +133,14 @@ static void *look_for_neighbors(void *arg) {
  	/* For loop to release neighboring mutexes */
  	// TODO: refactor to not use for-loop
  	for (i = 0; i < size; i++) {
- 		if (G->adjacency_mat[v * size + i] == 1) {
- 			pthread_mutex_unlock(&mutuexes[i]);			// unlock neighbor mutex
+ 		if (G->adjacency_mat->data[v * size + i] == 1) {
+ 			pthread_mutex_unlock(&mutexes[i]);			// unlock neighbor mutex
  		}
  	} 
  	
  	/* Exit thread ? */
+ 	
+ 	return NULL;
 }
 	
 	
@@ -135,6 +149,10 @@ static void *look_for_neighbors(void *arg) {
 * Define the pthread BFS algorithm
 */ 
 int *bfs_pthread(struct Graph *G) {
+	/* Get Graph metadata */ 
+	int size = G->size; 	// get number of vertices
+	//int cidx = -1;			// initialize current index into G->traversal list
+	
 	/* Error checking */
 	if (size == 0) {
 		perror("ERROR:\tGraph is empty"); 
@@ -142,7 +160,7 @@ int *bfs_pthread(struct Graph *G) {
 		
 	/* Initialize */
 	/* Initialize mutex array */ 
-	mutexes = malloc(size * sizeof(pthread_mutex_t);	// need to free this at the end of bfs_pthread
+	mutexes = malloc(size * sizeof(pthread_mutex_t));	// need to free this at the end of bfs_pthread
 	int i = 0; 
 	for (i = 0; i < size; i++) {
 		pthread_mutex_init(&mutexes[i], NULL); 	// invoke mutex initializer
@@ -151,8 +169,8 @@ int *bfs_pthread(struct Graph *G) {
 	for (i = 0; i < size; i++) {	
 		Traversal[i] = -1; 
 	}
-	Traversal_lock = pthread_mutex_init(&Traversal, NULL); // initialize Traversal lock 
-	pthread_mutex_unlock(&Traversal);		// unlock Traversal mutex
+	pthread_mutex_init(&Traversal_lock, NULL); // initialize Traversal lock 
+	pthread_mutex_unlock(&Traversal_lock);		// unlock Traversal mutex
 	/* Initialize global visited map */
 	for (i = 0; i < size; i++) {
 		Visited_Map[i] = false; 
@@ -160,18 +178,16 @@ int *bfs_pthread(struct Graph *G) {
 	/* Initialize next_vertex and barrier */
 	next_vertex = 0; 	// sets the starting vertex as vertex 0
 	barrier = 0; 
-	/* Get Graph metadata */ 
-	int size = G->size; 	// get number of vertices
-	int cidx = -1;			// initialize current index into G->traversal list
+
 	
-	struct args *argv; 
-	argv = malloc(size * sizeof(struct args)); 
+	args_ptr argv; 
+	argv = malloc(size * sizeof(args)); 
 	/* Initialize the pthreads */
 	for (i = 0; i < size; i++) {
 		argv[i].v = i;
 		argv[i].G = G; 
 		// TODO: refactor with a macro to create inline struct pointer to pass cleanly to pthread_create
-		pthread_create(Threads+i, NULL, look_for_neighbors, argv+i); 
+		pthread_create(Threads+i, NULL, &look_for_neighbors, argv+i); 
 	} 
 	
 	/* Release vertex 0 to begin traversal */
@@ -182,7 +198,7 @@ int *bfs_pthread(struct Graph *G) {
 	
 	/* Main thread waits for worker threads to finish */
 	for (i = 0; i < size; i++) {
-		pthread_join(); 
+		pthread_join(Threads[i], NULL); 
 	}
 	
 	return Traversal; 

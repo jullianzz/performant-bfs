@@ -25,7 +25,7 @@ int main() {
 	display_graph(inputG); 						// display the graph 
 
 	int *Traversal = bfs_pthread(inputG); 		// pass through serial bfs design
-	display_traversal(Traversal, size); 				// display traversal
+	display_traversal(TRAV, NULL, Traversal, size); 				// display traversal
 
 	
 	
