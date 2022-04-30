@@ -49,50 +49,45 @@
 /*
 * Define globals. 
 */
-pthread_t *threads;	// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
-pthread_mutex_t qvm_mutex; 	// qvm_mutex="query_visited_map mutex"
-int next_vertex; 	// next_vertex is set by query_visited_map and read by bfs_pthread(...) 
-
-
-
-/* query_visited_map is a thread worker function that indexes into G->visited_map 
-   to see if the thread was visited or not */
-void query_visited_map(struct Graph *G, int i) {
-	// no locking needed for G since read-only
-	if (G->visited_map[i] == false) {
-		// acquire mutex
-		// 
-	} else {
-		// exit thread
-		pthread_exit(); 
-	}
-} 
-
-
-
-/* find_unvisited_pthread is a multi-threaded version of the serial find_unvisited(...)
-   find_unvisited_pthread prototype is located in graph.h */
-void find_unvisited_pthread(struct Graph *G) {
-	// G->visited_map
-	// initialize V threads
-	
-} 
+pthread_t *threads;			// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
+pthread_mutex_t mutexes[]; 	// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
+int *Traversal;				// global traversal list
+int next_vertex; 			// next_vertex is set by query_visited_map and read by bfs_pthread(...) 
+int barrier; 				// barrier is a counter that is initialize by each vertex and decremented by each of its neighbors
 
 
 /* 
 * Define the pthread BFS algorithm
 */ 
 void bfs_pthread(struct Graph *G) {
+	/* Error checking */
+	if (size == 0) {
+		perror("ERROR:\tGraph is empty"); 
+	}
+		
 	/* Initialize */
-	pthread_mutex_init(&qvm_mutex, NULL); 	// initialize mutex
+	/* Initialize mutex array */ 
+	mutexes = malloc(size * sizeof(pthread_mutex_t);	// need to free this at the end of bfs_pthread
+	for (int i = 0; i < size; i++) {
+		pthread_mutex_init(&mutexes[i], NULL); 	// invoke mutex initializer
+	}
+	/* Initialize global traversal list */ 
+	for (i = 0; i < size; i++) {	
+		Traversal[i] = -1; 
+	}
+	/* Initialize next_vertex and barrier */
+	next_vertex = 0; 	// sets the starting vertex as vertex 0
+	barrier = 0; 
+	/* Get Graph metadata */ 
 	int size = G->size; 	// get number of vertices
 	int cidx = -1;			// initialize current index into G->traversal list
+	/* Initialize the pthreads */
 	
-	// initialize |V| worker threads
-	threads = malloc(size * sizeof(pthread_t);	// need to free this at the end of bfs_pthread
-	for (int i = 0; i < size; i++) {
-		pthread_create(&threads[i], NULL, query_visited_map, 
-	}
+	
+	/* Release vertex 0 by unlocking mutexes[0] */
+	
+	
+	/* Main thread waits for wroker threads to finish */
 	
 	
 	
