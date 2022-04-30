@@ -49,16 +49,24 @@ void display_graph(struct Graph *G) {
 }
 
 
-/* display_traversal prints the bfs traversal of the graph G */
-void display_traversal(struct Graph *G) {
-	int size = G->size; 
-	int i;
+/* display_traversal prints the bfs traversal of the graph G or Traversal */
+void display_traversal(enum dtype d, struct Graph *G, int *Traversal, int size) {
 	printf("Traversal is: ");
-	for (i = 0; i < size; i++) {
-		printf("%d ", G->traversal[i]);	
-	}
-	printf("\n");
-}
+	if (d == GRAP) {
+		size = G->size; 
+		int i;
+		for (i = 0; i < size; i++) {
+			printf("%d ", G->traversal[i]);	
+		}
+		printf("\n");
+	} else if (d == TRAV) {
+		int i;
+		for (i = 0; i < size; i++) {
+			printf("%d ", Traversal[i]);	
+		}
+		printf("\n");
+	} 
+} 
 
 
 /* find_unvisited finds an unvisited vertex in graph G*/
@@ -88,11 +96,5 @@ void free_graph(struct Graph *G) {
 	free(G->traversal); 			// free traversal pointer
 	free(G);						// free Graph
 }
-
-
-
-
-
-
 
 

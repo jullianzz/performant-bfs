@@ -134,7 +134,7 @@ static void *look_for_neighbors(void *arg) {
 /* 
 * Define the pthread BFS algorithm
 */ 
-void bfs_pthread(struct Graph *G) {
+int *bfs_pthread(struct Graph *G) {
 	/* Error checking */
 	if (size == 0) {
 		perror("ERROR:\tGraph is empty"); 
@@ -185,6 +185,7 @@ void bfs_pthread(struct Graph *G) {
 		pthread_join(); 
 	}
 	
+	return Traversal; 
 }
 
 

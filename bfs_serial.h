@@ -3,6 +3,6 @@
 
 #include "graph.h"
 
-void serial_bfs(struct Graph *G); 
+void bfs_serial(struct Graph *G);
 
 #endif

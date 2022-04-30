@@ -98,7 +98,7 @@ printf("\n"
     	G = init_graph(n);			// initialize Graph and adjacency matrix
     	//set_graph_size(G, n);		// set the graph and adjacency matrix sizes
 		clock_gettime(CLOCK_REALTIME, &time_start);
-		serial_bfs(G); 			// run through serial bfs
+		bfs_serial(G);	 			// run through serial bfs
 		clock_gettime(CLOCK_REALTIME, &time_stop);
 		time_stamp[OPTION][x] = interval(time_start, time_stop);
 		free_graph(G);		// free Graph 

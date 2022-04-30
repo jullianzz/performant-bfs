@@ -3,6 +3,6 @@
 
 #include "graph.h"
 
-void bfs_pthread(struct Graph *G);
+int *bfs_pthread(struct Graph *G);
 
 #endif

@@ -35,7 +35,7 @@
 /* 
 * Define the serial BFS algorithm
 */ 
-void serial_bfs(struct Graph *G) {
+void bfs_serial(struct Graph *G) {
 	/* Initialize */ 
 	int size = G->size; 	// get number of vertices
 	int cidx = -1;			// initialize current index into G->traversal list
