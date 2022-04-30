@@ -39,9 +39,17 @@
 // threads and sets a global variable (return value).
 
 
+
+// ok .... no this isn't going to work
+// new idea: think of the tree graphs to help visualize the following. I will need to 
+// use a count "barrier", an ARRAY of mutexes, and a global traversal list. The job of
+// each vertex is to wake its neighbor by unlocking its mutex. <<-- this is some really good stuff
+
+
 /*
 * Define globals. 
 */
+pthread_t *threads;	// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
 pthread_mutex_t qvm_mutex; 	// qvm_mutex="query_visited_map mutex"
 int next_vertex; 	// next_vertex is set by query_visited_map and read by bfs_pthread(...) 
 
@@ -67,6 +75,7 @@ void query_visited_map(struct Graph *G, int i) {
 void find_unvisited_pthread(struct Graph *G) {
 	// G->visited_map
 	// initialize V threads
+	
 } 
 
 
@@ -79,7 +88,11 @@ void bfs_pthread(struct Graph *G) {
 	int size = G->size; 	// get number of vertices
 	int cidx = -1;			// initialize current index into G->traversal list
 	
-	
+	// initialize |V| worker threads
+	threads = malloc(size * sizeof(pthread_t);	// need to free this at the end of bfs_pthread
+	for (int i = 0; i < size; i++) {
+		pthread_create(&threads[i], NULL, query_visited_map, 
+	}
 	
 	
 	
