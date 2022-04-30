@@ -13,7 +13,7 @@
 #include "param.h"
 #include "benchmark.h"
 #include "matrix.h"
-#include "serial.h"
+#include "bfs_serial.h"
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>

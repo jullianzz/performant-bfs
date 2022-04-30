@@ -7,7 +7,7 @@
 */ 
 
 
-#include "serial.h"
+#include "bfs_serial.h"
 #include "param.h"
 #include "matrix.h"
 #include "graph.h"

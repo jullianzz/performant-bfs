@@ -6,7 +6,7 @@
 */
 
 #include "param.h" 
-#include "serial.h" 
+#include "bfs_serial.h" 
 #include "graph.h"
 #include "matrix.h"
 #include <stdio.h>

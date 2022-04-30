@@ -8,11 +8,11 @@ override LDLIBS := -pthread $(LDLIBS)
 
 # Use 'make test' to run benchmarking for all BFS implementations
 test: *.c *.h
-	$(CC) $(CFLAGS) matrix.c graph.c benchmark.c serial.c test.c -o test
+	$(CC) $(CFLAGS) matrix.c graph.c benchmark.c bfs_serial.c test.c -o test
 
 # Use 'make tb_serial' to run testbench (verification) for serial BFS
 tb_serial: *.c *.h
-	$(CC) $(CFLAGS) matrix.c graph.c benchmark.c serial.c serial_tb.c -o tb_serial
+	$(CC) $(CFLAGS) matrix.c graph.c benchmark.c bfs_serial.c tb_serial.c -o tb_serial
 
 .PHONY: clean
 
