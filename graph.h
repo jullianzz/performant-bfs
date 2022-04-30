@@ -27,6 +27,6 @@ int find_unvisited(struct Graph *G);
 void display_traversal(struct Graph *G);
 void set_graph_size(struct Graph *G, long int size); 
 void free_graph(struct Graph *G);
-
+void find_unvisited_pthread(struct Graph *G); 
 
 #endif

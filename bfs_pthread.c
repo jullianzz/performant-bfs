@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-//#include <pthread.h>
+#include <pthread.h>
 
 // plan for pthread bfs implementation
 // I need to figure out what can be parallelized from the serial bfs code
@@ -36,14 +36,83 @@
 // idea for find_unvisited(...): Again, have V threads each indexing into G. 
 // Each worker thread indexes into visited_map, the first thread to find an
 // unvisited vertex enters the critical section, terminates all other worker
-// threads and sets a global variable (return value) .
+// threads and sets a global variable (return value).
+
+
+/*
+* Define globals. 
+*/
+pthread_mutex_t qvm_mutex; 	// qvm_mutex="query_visited_map mutex"
+int next_vertex; 	// next_vertex is set by query_visited_map and read by bfs_pthread(...) 
+
+
+
+/* query_visited_map is a thread worker function that indexes into G->visited_map 
+   to see if the thread was visited or not */
+void query_visited_map(struct Graph *G, int i) {
+	// no locking needed for G since read-only
+	if (G->visited_map[i] == false) {
+		// acquire mutex
+		// 
+	} else {
+		// exit thread
+		pthread_exit(); 
+	}
+} 
+
+
+
+/* find_unvisited_pthread is a multi-threaded version of the serial find_unvisited(...)
+   find_unvisited_pthread prototype is located in graph.h */
+void find_unvisited_pthread(struct Graph *G) {
+	// G->visited_map
+	// initialize V threads
+} 
 
 
 /* 
 * Define the pthread BFS algorithm
 */ 
 void bfs_pthread(struct Graph *G) {
+	/* Initialize */
+	pthread_mutex_init(&qvm_mutex, NULL); 	// initialize mutex
+	int size = G->size; 	// get number of vertices
+	int cidx = -1;			// initialize current index into G->traversal list
 	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	int v, back;  // 'back' is the index of the last element in traversal list 
+	back = 0; 
+	
+	while (true) {
+		/* If size of visited list is equal to the number of vertices, break out of loop */
+		if (++cidx == size)	break; 
+			
+		/* Find vertex to perform algorithm on */
+		if (G->traversal[cidx] == -1) {
+			v = find_unvisited(G); 				// find an unvisited vertex
+			G->traversal[back++] = v; 			// add vertex to traversal list
+			G->visited_map[v] = true; 			// update graph visited map
+		} 
+
+		/* Traverse the adjacency matrix for the first neighbor in the row */
+		int col;	// col="column"
+		for (col = 0; col < size; col++) {
+			if (G->adjacency_mat->data[G->traversal[cidx]*size + col] == 1) {
+				if (G->visited_map[col] == false) {		// if vertex has not been visited
+					G->traversal[back++] = col; 			// add vertex to visited list
+					G->visited_map[col] = true; 		// update visited map
+				}
+			}
+		}
+	}
 }
 
 
