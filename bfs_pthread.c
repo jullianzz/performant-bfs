@@ -52,8 +52,38 @@
 pthread_t *threads;			// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
 pthread_mutex_t mutexes[]; 	// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
 int *Traversal;				// global traversal list
+bool *Visited_Map;			// global visited map
 int next_vertex; 			// next_vertex is set by query_visited_map and read by bfs_pthread(...) 
 int barrier; 				// barrier is a counter that is initialize by each vertex and decremented by each of its neighbors
+int Back;					// Back tracks the index of the last element of the Traversal list
+
+
+
+/*
+* Define pthread work.
+*/ 
+/* look_for_neighbors looks for the  */
+void look_for_neighbors(int v) {
+	/* Block until mutex is released */
+	pthread_mutex_unlock(&mutexes[v]);
+	
+	/* Look for your neighbors */  
+ 	// query the Traversal list
+ 	// add to Traversal list if appropriate
+ 	// set barrier
+ 	// need mutexes whenever writing to these global structures
+ 	if (Visited_Map[v] == false) {
+ 		Traversal[Back] = v; 
+ 		Back++;  
+ 		Visited_Map[v] = true; 
+ 	} 
+ 	
+ 	/* For loop to release neighboring mutexes */
+ 	// can a mutex be unlocked more than once ? 
+}
+	
+
+
 
 
 /* 
