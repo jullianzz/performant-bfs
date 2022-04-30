@@ -27,11 +27,8 @@ int find_unvisited(struct Graph *G);
 void set_graph_size(struct Graph *G, long int size); 
 void free_graph(struct Graph *G);
 void find_unvisited_pthread(struct Graph *G); 
-/*Implicit function overloading of display_traversal(...) */
 enum dtype {GRAP = 0, TRAV = 1}; 	// enum for display_traversal type
-//void display_traversal(struct Graph *G);
-//void display_traversal(int *Traversal, int size);
-void display_traversal(enum dtype d, struct Graph *G, int *Traversal, int size); 
+void display_traversal(enum dtype d, struct Graph *G, int *Traversal, int size); /*Implicit function overloading of display_traversal(...) */
 
 
 

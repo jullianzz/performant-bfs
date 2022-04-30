@@ -121,7 +121,7 @@ void *look_for_neighbors(void *argv) {
  	
  	/* Set barrier */
  	pthread_mutex_lock(&barrier_lock);		// lock barrier
- 	barrier = num_neighbors;					// set barrier
+ 	barrier = num_neighbors;				// set barrier
  	pthread_mutex_unlock(&barrier_lock);	// unlock barrier
  	// hmm this may not work, what if another node changes barrier 
  	
@@ -151,55 +151,59 @@ void *look_for_neighbors(void *argv) {
 int *bfs_pthread(struct Graph *G) {
 	/* Get Graph metadata */ 
 	int size = G->size; 	// get number of vertices
-	//int cidx = -1;			// initialize current index into G->traversal list
 	
 	/* Error checking */
 	if (size == 0) {
 		perror("ERROR:\tGraph is empty"); 
 	}
 		
-	/* Initialize */
-	/* Initialize mutex array */ 
-	mutexes = malloc(size * sizeof(pthread_mutex_t));	// need to free this at the end of bfs_pthread
 	int i = 0; 
+	
+	
+	/* Initialize all synchronization objects */ 
+	mutexes = malloc(size * sizeof(pthread_mutex_t));	// initialize mutex array, TODO: need to free this at the end of bfs_pthread
 	for (i = 0; i < size; i++) {
-		pthread_mutex_init(&mutexes[i], NULL); 	// invoke mutex initializer
+		pthread_mutex_init(&mutexes[i], NULL); 			// initialize node mutex
+		pthread_mutex_lock(&mutexes[i]);				// lock node mutex
 	}
-	/* Initialize global traversal list */ 
+	pthread_mutex_init(&Traversal_lock, NULL); 			// initialize Traversal lock 
+	pthread_mutex_init(&Back_lock, NULL); 				// initialize Back_lock
+	pthread_mutex_init(&Visited_Map_lock, NULL); 		// initialize Visited_Map_lock
+	pthread_mutex_init(&barrier_lock, NULL); 			// initialize barrier_lock
+	
+	/* Initialize Traversal list */ 
 	for (i = 0; i < size; i++) {	
 		Traversal[i] = -1; 
 	}
-	pthread_mutex_init(&Traversal_lock, NULL); // initialize Traversal lock 
-	pthread_mutex_unlock(&Traversal_lock);		// unlock Traversal mutex
-	/* Initialize global visited map */
+
+	/* Initialize Visited_Map */
 	for (i = 0; i < size; i++) {
 		Visited_Map[i] = false; 
 	}
+	
 	/* Initialize next_vertex and barrier */
 	next_vertex = 0; 	// sets the starting vertex as vertex 0
 	barrier = 0; 
 
-	
-	args_ptr argv; 
-	argv = malloc(size * sizeof(args)); 
+	args_ptr argv = malloc(size * sizeof(args)); // initialize arguments list pointer
 	/* Initialize the pthreads */
 	for (i = 0; i < size; i++) {
 		argv[i].v = i;
 		argv[i].G = G; 
-		// TODO: refactor with a macro to create inline struct pointer to pass cleanly to pthread_create
 		pthread_create(Threads+i, NULL, &look_for_neighbors, argv+i); 
 	} 
 	
 	/* Release vertex 0 to begin traversal */
-	pthread_mutex_unlock(&mutexes[0]);		// unlock mutex 0
-	
-	/* Free argv */
-	free(argv);
-	
+	pthread_mutex_unlock(&mutexes[0]);			// unlock mutex 0
+
+
 	/* Main thread waits for worker threads to finish */
 	for (i = 0; i < size; i++) {
 		pthread_join(Threads[i], NULL); 
 	}
+	
+	/* Free argv */
+	free(argv);
 	
 	return Traversal; 
 }
