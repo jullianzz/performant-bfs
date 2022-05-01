@@ -20,7 +20,7 @@ int main() {
 	
 	printf("********** Pthreaded BFS Testbench **********\n"); 
 	
-	int size = 2; 								// initialize number of vertices
+	int size = 5; 								// initialize number of vertices
 	struct Graph *inputG = init_graph(size); 	// initialize directed test
 	display_graph(inputG); 						// display the graph 
 

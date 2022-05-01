@@ -70,19 +70,17 @@ void *look_for_neighbors(void *argv) {
 	int size = G->size; 
 	
 	/* Look for your neighbors */  
- 	int num_neighbors = 0; 								// initialize neighbors counter
  	int i; 
  	/* Iterate through row v of Graph G. Note: no lock needed on G because read-only */ 
  	for (i = 0; i < size; i++) {
  		if (G->adjacency_mat->data[v * size + i] == 1) {
- 			num_neighbors++;							// increment num_neighbors
+
 		 	pthread_mutex_lock(&Visited_Map_lock);		// lock Visited_Map because RD and WR
  		 	if (Visited_Map[v] == false) {				// query the Visited_Map 
  		 		/* Acquire locks */
  		 		pthread_mutex_lock(&Traversal_lock);	// lock Traversal list because RD and WR
  		 		pthread_mutex_lock(&Back_lock);			// lock Back_lock because RD and WR
  		 		pthread_mutex_lock(&barrier_count_lock);// lock barrier_count because RD and WR
- 		 		
  		 		/* Update metadata */ 
  		 		barrier_count++; 
 		 		Traversal[Back] = v; 
@@ -147,7 +145,7 @@ int *bfs_pthread(struct Graph *G) {
 	pthread_mutex_init(&Back_lock, NULL); 				// initialize Back_lock
 	pthread_mutex_init(&Visited_Map_lock, NULL); 		// initialize Visited_Map_lock
 	pthread_mutex_init(&barrier_count_lock, NULL); 		// initialize barrier_lock
-	pthread_barrier_init(&Barrier, NULL, 0);			// initialize Barrier to 0 (no previous layers to wait for)
+	pthread_barrier_init(&Barrier, NULL, 1);			// initialize Barrier to 1 (no previous layers to wait for)
 	
 	
 	/* Initialize Traversal list */ 
