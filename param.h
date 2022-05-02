@@ -16,7 +16,7 @@
 
 #define NUM_TESTS 10
 
-#define OPTIONS 3     
+#define OPTIONS 2 
 #define IDENT 0
 
 // #define INIT_LOW -10.0
