@@ -16,7 +16,7 @@ typedef struct {
 
 /* Matrix routines */ 
 matrix_ptr new_matrix(long int row_len);
-int set_matrix_rowlen(matrix_ptr m, long int index);
+int set_matrix_rowlen(matrix_ptr m, long int row_len);
 long int get_matrix_rowlen(matrix_ptr m);
 int init_matrix_rand(matrix_ptr m, long int row_len);
 int zero_matrix(matrix_ptr m, long int row_len);
