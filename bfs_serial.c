@@ -59,7 +59,7 @@ void bfs_serial(struct Graph *G) {
 		for (col = 0; col < size; col++) {
 			if (G->adjacency_mat->data[G->traversal[cidx]*size + col] == 1) {
 				if (G->visited_map[col] == false) {		// if vertex has not been visited
-					G->traversal[back++] = col; 			// add vertex to visited list
+					G->traversal[back++] = col; 		// add vertex to visited list
 					G->visited_map[col] = true; 		// update visited map
 				}
 			}

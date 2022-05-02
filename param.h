@@ -22,10 +22,12 @@
 // #define INIT_LOW -10.0
 // #define INIT_HIGH 10.0
 
+#define NEIGHBOR_WEIGHT	0.2 /* ratio of neighbors to non-neighbors to neighbors, should be decimal */
+
 
 typedef int data_t;  /* Keep datatype as int if using adjacency matrix */
 
-#define NUM_THREADS 4
+// #define NUM_THREADS 4
 
 // #define SEED 100
 

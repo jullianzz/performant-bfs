@@ -14,6 +14,7 @@
 #include "benchmark.h"
 #include "matrix.h"
 #include "bfs_serial.h"
+#include "bfs_pthread.h"
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,13 +82,6 @@ printf("\n"
     * the same graph will be created with init_graph. 
     */
 	struct Graph *G;		// declare Graph G
-	/*
-	struct Graph *inputpthread = init_graph(alloc_size); 	// initialize directed test
-    struct Graph *inputCUDA = init_graph(alloc_size); 	// initialize directed test
-    struct Graph *inputLoopUnrolling = init_graph(alloc_size); 	// initialize directed test
-	struct Graph *inputAVXIntrinsics = init_graph(alloc_size); 	// initialize directed test
-	*/ 
-	
 
     /*
     * Serial BFS Benchmarking
@@ -96,36 +90,34 @@ printf("\n"
     printf("OPTION %d - Serial bfs\n", OPTION);
     for (x = 0; x < NUM_TESTS && (n = A*x*x + B*x + C, n <= alloc_size); x++) {
     	G = init_graph(n);			// initialize Graph and adjacency matrix
-    	//set_graph_size(G, n);		// set the graph and adjacency matrix sizes
 		clock_gettime(CLOCK_REALTIME, &time_start);
 		bfs_serial(G);	 			// run through serial bfs
 		clock_gettime(CLOCK_REALTIME, &time_stop);
 		time_stamp[OPTION][x] = interval(time_start, time_stop);
-		free_graph(G);		// free Graph 
+		free_graph(G);				// free Graph 
 		printf("iter %ld done\n", x);
     }
     
     /*
-    * pthread Benchmarking
+    * pthread BFS Benchmarking
     */ 
-    /*
     OPTION++;
-    printf("OPTION %d - serial_bfs()\n", OPTION);
+    printf("OPTION %d - pthread bfs\n", OPTION);
     for (x = 0; x < NUM_TESTS && (n = A*x*x + B*x + C, n <= alloc_size); x++) {
-    	set_graph_size(inputpthread, n);		// set the graph and adjacency matrix sizes
+    	G = init_graph(n);			// initialize Graph and adjacency matrix
 		clock_gettime(CLOCK_REALTIME, &time_start);
-		pthread_bfs(inputpthread); 			    // run through pthread bfs
+		bfs_pthread(G);			// run through pthread bfs
 		clock_gettime(CLOCK_REALTIME, &time_stop);
 		time_stamp[OPTION][x] = interval(time_start, time_stop);
 		printf("iter %ld done\n", x);
     }
-    */ 
+   
 
 
 	/* Display results */
     printf("\n");
     printf("All measurements are in cycles (if CPNS is set correctly in the code)\n");
-    printf("row_len,\tserial_bfs,\n");
+    printf("row_len,  serial_bfs,  pthread_bfs\n");
     {
 	int i, j;
 	for (i = 0; i < NUM_TESTS; i++) {
