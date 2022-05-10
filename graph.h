@@ -21,6 +21,9 @@ struct Graph {
 }; 
 
 
+/* Lean Graph structure */
+
+
 struct Graph *init_graph(int size);
 void display_graph(struct Graph *G);
 int find_unvisited(struct Graph *G); 

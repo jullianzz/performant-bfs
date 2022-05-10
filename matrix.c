@@ -71,17 +71,18 @@ int init_matrix_rand(matrix_ptr m, long int row_len)
 
     if (row_len > 0) {
 		m->rowlen = row_len;
-		for (i = 0; i < row_len; i++) {					// i = row
+		for (i = 0; i < row_len-1; i++) {					// i = row
 		q = false; 
 			for (j = i+1; j < row_len-1; j++) {			// j = col
 				r = rand() % 10; 						// generate random value [0, 9] 
 				s = (r < NEIGHBOR_WEIGHT*10) ? 1 : 0; 	// use weight to determine if neighbor or not
 				q = (s == 1) ? true : false; 
-				m->data[i*row_len+j] = (data_t) s;		// generate random value [0,1]
+				m->data[i*row_len+j] = (data_t) s;	    // set matrix element
 				m->data[j*row_len+i] = (data_t) s;		// set mirror element to same value
 			}
-			if (!q && i != row_len-1) {
-				m->data[i*row_len+(row_len-1)] = 1;		// generate random value [0,1]
+			// if (!q && i != row_len-1) {
+            if (!q) {
+				m->data[i*row_len+(row_len-1)] = 1;		// set matrix element
 				m->data[(row_len-1)*row_len+i] = 1;		// set mirror element to same value
 			} 
 		}

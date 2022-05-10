@@ -39,13 +39,14 @@ struct Graph *init_graph(int size) {
 void display_graph(struct Graph *G) {
 	int size = G->size; 
 	int i;
-	printf("Graph is: \n");
+	printf("Graph is: \n\n   ");
 	for (i = 0; i < size*size; i++) {
 		printf("%d ", G->adjacency_mat->data[i]);
 		if ((i+1) % size == 0) {
-			printf("\n");
+			printf("\n   ");
 		}		
 	}
+	printf("\n\n\n");
 }
 
 

@@ -11,6 +11,7 @@
 #include "param.h"
 #include "matrix.h"
 #include "graph.h"
+#include "benchmark.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -30,13 +31,13 @@ typedef struct {
 	int v;
 } args, *args_ptr;
 
-
+//struct timespec time_start, time_stop;
 /*
 * Define globals. 
 */
 pthread_t *Threads;			// array of |V| worker threads. Can try to make this an array instead if dynamic allocation is too slow
 int *Traversal;				// global traversal list
-bool *Visited_Map;			// global visited map
+bool *Visited_Map;
 int barrier_count; 			// barrier is a counter that is initialize by each vertex and decremented by each of its neighbors
 int Back;					// Back tracks the index of the last element of the Traversal list
 int current_layer;			// current layer (first layer is layer 0)
@@ -46,13 +47,10 @@ int current_layer;			// current layer (first layer is layer 0)
 /* 
 * Define global synchonization objects. 
 */
-pthread_mutex_t *mutexes; 		// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
-pthread_mutex_t Traversal_lock;	// Traversal_lock protects the Traversal global
-pthread_mutex_t Back_lock; 
-pthread_mutex_t Visited_Map_lock; 
-pthread_mutex_t barrier_count_lock;
-pthread_barrier_t *Barriers;	// each layer gets a barrier  
-pthread_mutex_t Barrier_Update_lock; 
+pthread_mutex_t *mutexes; 				// mutexes is an array of |V| mutexes where each mutex is associated with a vertex
+pthread_mutex_t Critical_Section_lock;	// Traversal_lock protects the Traversal global
+pthread_mutex_t Visited_Map_lock;
+pthread_barrier_t *Barriers;			// each layer gets a barrier  
 
 
 
@@ -66,80 +64,54 @@ void *look_for_neighbors(void *argv) {
 	int cv = current_layer;						// record value of current layer
 	int v = ((args_ptr) argv)->v;
 	struct Graph *G = ((args_ptr) argv)->G; 
+    /* Get Graph metadata */
+	int size = G->size; 
+    /* Initialize neighbor list */
+    int *neighbors = malloc(size * sizeof(int));
+
+    int i, num_neighbors; 
+    /* Find your neighbors */
+    for (i = 0, num_neighbors = 0; i < size; i++)
+        if (G->adjacency_mat->data[v * size + i] == 1) 
+            neighbors[num_neighbors++] = i; 
+
 	
 	/* Block until node mutex is released */
-	printf("waiting %d\n", v);
 	pthread_mutex_lock(&mutexes[v]);
-	
-	/* Get Graph metadata */
-	int size = G->size; 
-	
-	/* Add self to Visited_Map */
- 	pthread_mutex_lock(&Visited_Map_lock);		// lock Visited_Map because RD and WR
-	if (Visited_Map[v] == false) {
- 		/* Acquire locks */
- 		pthread_mutex_lock(&Traversal_lock);	// lock Traversal list because RD and WR
- 		pthread_mutex_lock(&Back_lock);			// lock Back_lock because RD and WR
- 		
- 		/* Update metadata */ 
- 		Traversal[Back++] = v; 
- 		Visited_Map[v] = true; 					// update Visited_Map
- 		/* Release locks */
- 		pthread_mutex_unlock(&Traversal_lock);	// unlock Traversal lock
- 		pthread_mutex_unlock(&Back_lock);		// lock Back_lock because RD and WR
-	}
- 	pthread_mutex_unlock(&Visited_Map_lock);	// unlock Visited_Map_lock
-	 		 	
-	/* Look for your neighbors */  
- 	int i; 
- 	/* Iterate through row v of Graph G. Note: no lock needed on G because read-only */ 
- 	for (i = 0; i < size; i++) {
- 		printf("thread %d iter %d\n", v, i);
- 		if (G->adjacency_mat->data[v * size + i] == 1) {
 
-		 	pthread_mutex_lock(&Visited_Map_lock);		// lock Visited_Map because RD and WR
- 		 	if (Visited_Map[i] == false) {				// query the Visited_Map 
- 		 		/* Acquire locks */
- 		 		pthread_mutex_lock(&Traversal_lock);	// lock Traversal list because RD and WR
- 		 		pthread_mutex_lock(&Back_lock);			// lock Back_lock because RD and WR
- 		 		pthread_mutex_lock(&barrier_count_lock);// lock barrier_count because RD and WR
- 		 		/* Update metadata */ 
- 		 		barrier_count++; 
-		 		Traversal[Back++] = i; 
-		 		Visited_Map[i] = true; 					// update Visited_Map
-		 		
-		 		/* Release locks */
-		 		pthread_mutex_unlock(&Traversal_lock);	// unlock Traversal lock
- 		 		pthread_mutex_unlock(&Back_lock);		// lock Back_lock because RD and WR
-  		 		pthread_mutex_unlock(&barrier_count_lock);	// lock barrier_count because RD and WR
-		 	}
-		 	pthread_mutex_unlock(&Visited_Map_lock);	// unlock Visited_Map_lock
-		} 
+    /* Each node of the layer adds itself to the global Traversal list */
+	pthread_mutex_lock(&Critical_Section_lock);		// lock C.S.
+	Traversal[Back++] = v; 
+	pthread_mutex_unlock(&Critical_Section_lock);	// unlock C.S.
+	
+ 	/* For loop to set next barrier initialization */
+ 	for (i = 0; i < num_neighbors; i++) {
+        pthread_mutex_lock(&Visited_Map_lock);	// unlock neighbor mutex
+        if (Visited_Map[neighbors[i]] == false) {
+            Visited_Map[i] = true; 
+            barrier_count++; 
+        }
+        pthread_mutex_unlock(&Visited_Map_lock);	// unlock neighbor mutex
  	}
- 	
- 	/* Wait for all nodes of current layer to finish by using a barrier */
- 	printf("thread %d waiting at barrier\n", v);
+
+ 	/* Wait for all nodes of current layer to arrive at barrier */
  	int barrier_ret = pthread_barrier_wait(&Barriers[cv]);	
- 	printf("thread %d passed barrier\n", v);
  	
- 	/* Block until all nodes in layer have passed the barrier */
  	
  	/* Set the barrier for the next layer. Note: Only one node per layer needs to do this */		
  	if (barrier_ret == PTHREAD_BARRIER_SERIAL_THREAD) {	
-		pthread_mutex_lock(&Barrier_Update_lock);			// prevent interrupts while updating Barrier
- 		printf("thread %d setting next barrier to %d\n", v, barrier_count);
-	 	pthread_barrier_init(&Barriers[++current_layer], NULL, barrier_count);// set barrier1
-	 	barrier_count = 0; 		
-		pthread_mutex_unlock(&Barrier_Update_lock);			// prevent interrupts while updating Barrier					
+        if (current_layer > size-1) {
+            pthread_barrier_init(&Barriers[++current_layer], NULL, barrier_count);	// set barrier1
+            barrier_count = 0; 	
+        }	
  	}
 
+
  	/* For loop to release neighboring mutexes */
- 	for (i = 0; i < size; i++) {
- 		if (G->adjacency_mat->data[v * size + i] == 1) {
-	 		printf("thread %d releasing %d\n", v, i);
- 			pthread_mutex_unlock(&mutexes[i]);			// unlock neighbor mutex
- 		}
- 	} 
+    for (i = 0; i < num_neighbors; i++)
+        pthread_mutex_unlock(&mutexes[neighbors[i]]);			// unlock neighbor mutex
+
+    free(neighbors);
  	
  	
  	return NULL;
@@ -170,31 +142,19 @@ int *bfs_pthread(struct Graph *G) {
 		pthread_mutex_lock(&mutexes[i]);				// lock node mutex
 	}
 	Barriers = malloc(size * sizeof(pthread_barrier_t));// initialize barrier array
+	Traversal = malloc(size * sizeof(int));				// initialize barrier array
+	Visited_Map = malloc(size * sizeof(bool));			// initialize barrier array
 	pthread_barrier_init(&Barriers[0], NULL, 1);		// initialize layer 0 Barrier to 1 (no previous layers to wait for)
-	pthread_mutex_init(&Traversal_lock, NULL); 			// initialize Traversal lock 
-	pthread_mutex_init(&Back_lock, NULL); 				// initialize Back_lock
+	pthread_mutex_init(&Critical_Section_lock, NULL); 	// initialize Traversal lock 
 	pthread_mutex_init(&Visited_Map_lock, NULL); 		// initialize Visited_Map_lock
-	pthread_mutex_init(&barrier_count_lock, NULL); 		// initialize barrier_lock
-	pthread_mutex_init(&Barrier_Update_lock, NULL);		// initialize Barrier_Update_lock
-	
-	/* Initialize Traversal list */ 
-	Traversal = malloc(size * sizeof(int));
-	for (i = 0; i < size; i++) {	
-		Traversal[i] = -1; 
-	}
 
-	/* Initialize Visited_Map */
-	Visited_Map = malloc(size * sizeof(bool));
-	for (i = 0; i < size; i++) {
-		Visited_Map[i] = false; 
-	}
-	
+
 	/* Initialize other globals */
 	barrier_count = 0; 
 	Back = 0;
 	current_layer = 0;
 
-	args_ptr argv = malloc(size * sizeof(args)); // initialize arguments list pointer
+	args_ptr argv = malloc(size * sizeof(args)); 		// initialize arguments list pointer
 	/* Initialize the pthreads */
 	Threads = malloc(size * sizeof(pthread_t));
 	for (i = 0; i < size; i++) {
@@ -203,23 +163,26 @@ int *bfs_pthread(struct Graph *G) {
 		pthread_create(Threads+i, NULL, &look_for_neighbors, argv+i); 
 	} 
 	
+	//clock_gettime(CLOCK_REALTIME, &time_start);
 	/* Release vertex 0 to begin traversal */
 	pthread_mutex_unlock(&mutexes[0]);			// unlock mutex 0
 
 
 	/* Main thread waits for worker threads to finish */
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) 
 		pthread_join(Threads[i], NULL); 
-	}
-	
+
+	//clock_gettime(CLOCK_REALTIME, &time_stop);
+	//printf("size %d time: %f\n", size, interval(time_start, time_stop));
 	/* Free memory */
 	free(argv);
 	free(Visited_Map);
-	//free(Traversal); 
+	// free(Traversal); 
 	free(Threads);
 	free(mutexes);
 	
-	return Traversal; 
+	return Traversal;  // return Traversal
+	// return NULL;
 }
 
 

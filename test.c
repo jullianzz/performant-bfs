@@ -121,11 +121,10 @@ printf("\n"
     {
 	int i, j;
 	for (i = 0; i < NUM_TESTS; i++) {
-	    //printf("%d,\t", A*i*i + B*i + C);	// print row length 
 	    printf("%d\t", A*i*i + B*i + C);	// print row length 
 	    for (j = 0; j < OPTIONS; j++) {
-			//if (j != 0) printf(", ");
-			printf("%ld\t", (long int)((double)(CPNS) * 1.0e9 * time_stamp[j][i]));	// print time in cycles
+			//printf("%ld    ", (long int)((double)(CPNS) * 1.0e9 * time_stamp[j][i]));	// print time in cycles
+			printf("%f    ", time_stamp[j][i]);	// print time 
 	    }
 	    printf("\n");
 	}
